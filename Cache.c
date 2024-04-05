@@ -1,18 +1,26 @@
 // Author: Devon Beal
 //
-// Test 1: seemed to have no hits a straight 0% while miss rate was at 100%.
-// This might be due to sequential access to every word. Also since the cahe is initially empty and each new block is empty.
-//
-//Test 2: This one was better once I Fixed it. Hits where about 25% and Miss
-//rate was about 75%. Every word in RAM is accessed in increments of the block 
-//size. This might be due to the cache being small and direct-mapped.
-//
-//Test 3: As put in the veriables the hit and miss rate was dependant on random
-//addresses, and I think I got maybe 1 hit both times I ran this. Since the 
-//addresses coincide with the address already in the cache then the cache hits
-//else does not. 
-//
-//Might need to do some minor changes before submitting  
+/*
+Results of the three tests:
+
+Test 1:
+- Hit rate: 75%
+- Miss rate: 25%
+In Test 1, sequential access to every word in RAM results in a hit rate of 75% and a miss rate of 25%. 
+This unexpected hit rate shows that some patterns might be emerging in the memory access, allowing certain blocks to stay in the cache.
+
+Test 2:
+- Hit rate: 75%
+- Miss rate: 25%
+This might not be a fully accurate reprsentation of test 2 if I counted the test wrong.
+Despite the patterned access, the hit rate remains consistent with Test 1, the cache's behavior might not be greatly affected by the access pattern due to conflicts in the direct-mapped cache.
+
+Test 3:
+- Hit rate: 0%
+- Miss rate: 100%
+In Test 3, random access to words in RAM results in a 0% hit rate and a 100% miss rate. 
+This is expected since random access patterns are less likely to match addresses already present in the cache, leading to cache misses.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -67,10 +75,11 @@ int main() {
 
     initialize_cache();
 
-    // Test 2: Access every word in RAM in increments of the block size
     printf("\nTest 2:\n");
-    for (int i = 0; i < RAM_SIZE * WORD_SIZE; i += BLOCK_SIZE * WORD_SIZE) {
-        access_cache(i);
+    for (int block_offset = 0; block_offset < BLOCK_SIZE; block_offset++) {
+        for (int i = block_offset; i < RAM_SIZE * WORD_SIZE; i += BLOCK_SIZE * WORD_SIZE) {
+            access_cache(i);
+        }
     }
 
     initialize_cache();
